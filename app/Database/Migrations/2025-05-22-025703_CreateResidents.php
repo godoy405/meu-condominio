@@ -57,11 +57,19 @@ class CreateResidents extends Migration
         );
 
         $this->forge->addKey('id', true);
+        $this->forge->addKey('user_id');
+        $this->forge->addKey('code');
+        $this->forge->addKey('mobile_phone');        
+        $this->forge->addKey('name');
+        $this->forge->addKey('created_at');
+        $this->forge->addKey('updated_at');
+
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('residents');
     }
 
     public function down()
     {
-        //
+        $this->forge->dropTable('residents');
     }
 }
