@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Basic;
 
+use CodeIgniter\Exceptions\PageNotFoundException;
 use CodeIgniter\Model;
 
 abstract class AppModel extends Model
@@ -21,12 +22,7 @@ abstract class AppModel extends Model
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';   
 
-    // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
-    protected $cleanValidationRules = true;
-
+ 
     // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['escapeData', 'setCode'];   
@@ -54,5 +50,38 @@ abstract class AppModel extends Model
         return $data;
     }
 
+    /**
+     * Busca um registro pelo código e retorna um objeto com os dados relacionados
+     * 
+     * @param string $code Código único da entidade
+     * @param array $contains Array de entidades relacionadas
+     * @return object Retorna a entidade correspndente ao `returnType`
+     * @throws PageNotFoundException
+     */
+    
+    protected function getByCode(string $code, array $contains = []): ?object 
+    {
+        $row = $this->where('code', $code)->first();
+
+        if(!$row){
+            // Exemplo: App\Models\ResidentModel
+            $className = static::class;
+            throw new PageNotFoundException("Registro com o código {$code} não encontrado na tabela {$this->table} ({$className})");
+        }
+
+        $this->relateData($row, $contains);
+  
+        return $row;
+    }
+
+    protected function relateData(object &$entity, array $contains = []): void
+    {
+        // esse método as classes filhas podem sobrescrevê-lo para 
+        //atender a necessidade específica de cada modelo
+        
+            
+    }
+
+   
    
 }
