@@ -59,7 +59,7 @@ abstract class AppModel extends Model
      * @throws PageNotFoundException
      */
     
-    protected function getByCode(string $code, array $contains = []): ?object 
+    public function getByCode(string $code, array $contains = []): ?object 
     {
         $row = $this->where('code', $code)->first();
 
@@ -82,6 +82,6 @@ abstract class AppModel extends Model
             
     }
 
-   
+       
    
 }
