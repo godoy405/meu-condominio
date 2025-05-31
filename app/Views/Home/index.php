@@ -1,14 +1,14 @@
-<?= $this->extend('layouts/main'); ?>
+<?php $this->extend('layouts/main'); ?>
 
-<?= $this->section('title'); ?>
+<?php $this->section('title'); ?>
 <?php echo $title; ?>
-<?= $this->endSection(); ?>
+<?php $this->endSection(); ?>
 
-<?= $this->section('css'); ?>
+<?php $this->section('css'); ?>
 
-<?= $this->endSection(); ?>
+<?php $this->endSection(); ?>
 
-<?= $this->section('content'); ?>
+<?php $this->section('content'); ?>
 
 <div class="row">
     <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
@@ -628,8 +628,8 @@
 </div>
 
 
-<?= $this->endSection(); ?>
+<?php $this->endSection(); ?>
 
-<?= $this->section('js'); ?>
+<?php $this->section('js'); ?>
 
-<?= $this->endSection(); ?>
+<?php $this->endSection(); ?>
