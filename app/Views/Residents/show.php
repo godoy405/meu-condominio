@@ -39,8 +39,40 @@
                 <p><strong>Nome: </strong><?php echo $resident->name; ?></p>
                 <p><strong>Telefone: </strong><?php echo $resident->mobile_phone; ?></p>
                 <p><strong>Apartamento: </strong><?php echo $resident->apartment; ?></p>
-                <p><strong>Criado: </strong><?php echo $resident->created_at->humanize; ?></p>
-                <p><strong>Atualizado:  </strong><?php echo $resident->updated_at->humanize; ?></p>  
+                <p><strong>Criado: </strong><?php echo $resident->created_at->humanize(); ?></p>
+                <p><strong>Atualizado:  </strong><?php echo $resident->updated_at->humanize(); ?></p>  
+
+                <hr>
+                <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Ações
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a href="<?php echo route_to('residents.edit', $resident->code); ?>" class="dropdown-item mb-2">
+                          Editar
+                      </a>
+                    </li>
+                    <li>
+                      <a href="<?php echo route_to('residents.user', $resident->code); ?>" class="dropdown-item mb-2">
+                          Gerenciar usuário
+                      </a>
+                    </li> 
+                    
+                    <li>
+                      <?php echo form_open(
+                        action: route_to('residents.destroy', $resident->code),
+                        attributes: ['class' => 'd-inline', 'onsubmit' => 'return confirm("Tem certeza que deseja excluir esse residente?");'],
+                        hidden: ['_method' => 'DELETE']
+                        ); ?>
+                         <button type="submit" class="dropdown-item text-danger">
+                            Excluir
+                        </button>  
+                      <?php echo form_close();?>                     
+                    </li>
+                    
+                  </ul>
+                </div>                  
             </div>
           </div>
         </div>
