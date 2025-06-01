@@ -33,7 +33,7 @@ class Security extends BaseConfig
      *
      * Token name for Cross Site Request Forgery protection.
      */
-    public string $tokenName = 'csrf_test_name';
+    public string $tokenName = 'app_security';
 
     /**
      * --------------------------------------------------------------------------
@@ -82,5 +82,5 @@ class Security extends BaseConfig
      *
      * @see https://codeigniter4.github.io/userguide/libraries/security.html#redirection-on-failure
      */
-    public bool $redirect = (ENVIRONMENT === 'production');
+    public bool $redirect = true;
 }
