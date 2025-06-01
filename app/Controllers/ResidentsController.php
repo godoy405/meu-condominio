@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Controllers\BaseController;
+use App\Entities\Resident;
 use App\Models\ResidentModel;
 
 class ResidentsController extends BaseController
@@ -21,6 +22,17 @@ class ResidentsController extends BaseController
         ];
 
         return view('residents/index', $data);
+    }
+
+    public function new()
+    {
+        $data = [
+            'title'    => 'Novo residentes',
+            'resident' => new Resident(),
+            'route'    => route_to('residents.create'),            
+        ];
+
+        return view('residents/form', $data);
     }
 
     public function show(string $code)
@@ -48,4 +60,5 @@ class ResidentsController extends BaseController
 
         return view('residents/form', $data);
     }
+
 }
