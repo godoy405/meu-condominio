@@ -34,4 +34,18 @@ class ResidentsController extends BaseController
 
         return view('residents/show', $data);
     }
+
+    public function edit(string $code)
+    {
+        $resident = $this->model->getByCode(code: $code);
+
+        $data = [
+            'title'    => 'Editar residentes',
+            'resident' => $resident,
+            'route'    => route_to('residents.update', $resident->code),
+            'hidden'   => ['_method' => 'PUT'],
+        ];
+
+        return view('residents/form', $data);
+    }
 }
