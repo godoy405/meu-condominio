@@ -11,6 +11,7 @@ use CodeIgniter\HTTP\RedirectResponse;
 class ResidentsController extends BaseController
 {
     private ResidentModel $model;
+
     public function __construct()
     {
         $this->model = model(ResidentModel::class);
@@ -19,7 +20,7 @@ class ResidentsController extends BaseController
     public function index()
     {
         $data = [
-            'title' => 'Gerenciar residentes',
+            'title'     => 'Gerenciar residentes',
             'residents' => $this->model->orderBy('created_at', 'DESC')->findAll(),
         ];
 
@@ -29,12 +30,30 @@ class ResidentsController extends BaseController
     public function new()
     {
         $data = [
-            'title'    => 'Novo residentes',
+            'title'    => 'Novo residente',
             'resident' => new Resident(),
-            'route'    => route_to('residents.create'),            
+            'route'    => route_to('residents.create'),
         ];
 
         return view('residents/form', $data);
+    }
+
+    public function create(): RedirectResponse
+    {
+        $rules = (new ResidentValidation)->getRules();
+        
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
+        }
+
+        $resident = new Resident($this->validator->getValidated());     
+        $id = $this->model->insert($resident);
+        $resident = $this->model->find($id);
+
+        return redirect()->route('residents.show', [$resident->code])
+            ->with('success', 'Sucesso!');
     }
 
     public function show(string $code)
@@ -42,7 +61,7 @@ class ResidentsController extends BaseController
         $resident = $this->model->getByCode(code: $code);
 
         $data = [
-            'title'    => 'Detalhes do residentes',
+            'title'    => 'Detalhes do residente',
             'resident' => $resident,
         ];
 
@@ -54,7 +73,7 @@ class ResidentsController extends BaseController
         $resident = $this->model->getByCode(code: $code);
 
         $data = [
-            'title'    => 'Editar residentes',
+            'title'    => 'Editar residente',
             'resident' => $resident,
             'route'    => route_to('residents.update', $resident->code),
             'hidden'   => ['_method' => 'PUT'],
@@ -63,25 +82,30 @@ class ResidentsController extends BaseController
         return view('residents/form', $data);
     }
 
-        public function update(string $code): RedirectResponse {
-            $rules = (new ResidentValidation)->getRules(code: $code);
-            if (!$this->validate($rules)) {
-                return redirect()->back()
-                                ->withInput()
-                                ->with('errors', $this->validator->getErrors());
-            }
-
-            $resident = $this->model->getByCode(code: $code);
-            $resident->fill($this->request->getPost());
-
-            if (!$this->model->save($resident)) {
-                return redirect()->back()
-                                ->withInput()
-                                ->with('errors', $this->model->errors());
-            }
-
-            return redirect()->route('residents.show', [$resident->code])
-                            ->with('success', 'Residente atualizado com sucesso');
+    public function update(string $code): RedirectResponse
+    {
+        $rules = (new ResidentValidation)->getRules(code: $code);
+        
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
         }
+
+        $resident = $this->model->getByCode(code: $code);
+        $resident->fill($this->request->getValidated());
+        $this->model->save($resident);
+
+        return redirect()->route('residents.show', [$resident->code])
+            ->with('success', 'Sucesso!');
+    }
+
+    public function destroy(string $code): RedirectResponse
+    {
+      
+        $this->model->where('code', $code)->delete();
+
+        return redirect()->route('residents',)->with('success', 'Sucesso!');
+    }
 
 }

@@ -369,6 +369,8 @@
     <div class="container-fluid py-4">
     
       <div id="min-height-view">
+
+        <?php echo validation_list_errors();?>
         <?php echo $this->renderSection('content'); ?>
       </div>       
 
@@ -490,6 +492,8 @@
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="<?php echo base_url(); ?>assets/js/soft-ui-dashboard.min.js?v=1.0.3"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.6.1/toastify.min.js" integrity="sha512-79j1YQOJuI8mLseq9icSQKT6bLlLtWknKwj1OpJZMdPt2pFBry3vQTt+NZuJw7NSd1pHhZlu0s12Ngqfa371EA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <?php echo $this->include('Layouts/_session_messages'); ?>
 
   <!--  <script>      
         Toastify({
