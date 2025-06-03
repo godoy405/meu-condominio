@@ -15,6 +15,7 @@ class ResidentModel extends AppModel
         'name',
         'apartment',
         'mobile_phone',
+        'code'
     ];
 
     public function getLoggedResident(): Resident {
@@ -26,6 +27,19 @@ class ResidentModel extends AppModel
 
         return $resident;
     } 
+
+    public function getByCode(string $code, array $contains = []): Resident
+    {
+        $resident = $this->where('code', $code)->first();
+
+        if (!$resident) {
+            throw new Exception("Residente não encontrado", 404);
+        }
+
+        $this->relateData($resident, $contains);
+
+        return $resident;
+    }
 
     protected function relateData(object &$resident, array $contains = []): void
     {

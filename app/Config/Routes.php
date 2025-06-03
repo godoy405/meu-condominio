@@ -3,6 +3,7 @@
 use App\Controllers\HomeController;
 use CodeIgniter\Router\RouteCollection;
 use App\Controllers\ResidentsController;
+use App\Controllers\ResidentUserController;
 
 /**
  * @var RouteCollection $routes

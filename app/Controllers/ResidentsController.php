@@ -93,7 +93,7 @@ class ResidentsController extends BaseController
         }
 
         $resident = $this->model->getByCode(code: $code);
-        $resident->fill($this->request->getValidated());
+        $resident->fill($this->request->getPost());
         $this->model->save($resident);
 
         return redirect()->route('residents.show', [$resident->code])

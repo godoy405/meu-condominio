@@ -16,17 +16,10 @@
     <div class="col-12">
         <div class="card mb-4">
             <div class="card-header pb-0">
-                <h6><?php echo $title; ?></h6>
-
-                <?php if ($resident->code === null): ?>
-                    <a href="<?php echo route_to('residents'); ?>" class="btn btn-outline-secondary">
-                        <i class="fas fa-angle-double-left"></i>&nbsp;Listar residentes
-                    </a>
-                <?php else: ?>
+                <h6><?php echo $title; ?></h6>               
                     <a href="<?php echo route_to('residents.show', $resident->code); ?>" class="btn btn-outline-secondary">
-                        <i class="fas fa-angle-double-left"></i>&nbsp;Detalhes do residentes
-                    </a>
-                <?php endif; ?>
+                        <i class="fas fa-angle-double-left"></i>&nbsp;Detalhes do residente
+                    </a>               
             </div>
             <div class="card-body">
             <?php echo form_open(
@@ -35,17 +28,18 @@
                     hidden: $hidden ?? []
             ); ?>
             <div class="mb-3">
-                <label for="name">Nome completo</label>
-                <input type="text" class="form-control" required name="name" value="<?php echo old('name', $resident->name) ?>" id="name" placeholder="Nome completo">
+                <label for="email">E-mail de acesso</label>
+                <input type="email" class="form-control" required name="email" value="<?php echo old('email', $resident?->user?->email) ?>" id="email" placeholder="E-mail de acesso">
             </div>
 
             <div class="mb-3">
-                <label for="mobile_phone">Telefone</label>
-                <input type="tel" class="form-control" required name="mobile_phone" value="<?php echo old('mobile_phone', $resident->mobile_phone) ?>" id="mobile_phone" placeholder="Telefone">
+                <label for="password">Senha <?php echo $resident?->user !== null ? '(opcional)'  : ''; ?></label>
+                <input type="password" class="form-control" <?php echo $resident?->user == null ? 'required'  : ''; ?> name="password" id="password" placeholder="Senha de acesso">
             </div>
+
             <div class="mb-3">
-                <label for="apartment">Apartamento</label>
-                <input type="text" class="form-control" required name="apartment" value="<?php echo old('apartment', $resident->apartment) ?>" id="apartment" placeholder="Apartamento">
+                <label for="password_confirm">Confirme a senha </label>
+                <input type="password" class="form-control" name="password_confirm" id="password_confirm" placeholder="Confirme a senha">
             </div>
 
             <button type="submit" id="btnSubmit" class="btn btn-success">
