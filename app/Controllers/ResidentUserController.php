@@ -52,8 +52,14 @@ class ResidentUserController extends BaseController
         $userModel->setAllowedFields(['resident_id', 'username']);
         $userModel->save($user);
 
-        $user = $userModel->findById($userModel->getInsertID());
-        $userModel->addToDefaultGroup($user);
+        // Recupera o usuário completo do banco de dados
+        $userId = $userModel->getInsertID();
+        if ($userId) {
+            $user = $userModel->findById($userId);
+            if ($user) {
+                $userModel->addToDefaultGroup($user);
+            }
+        }
 
         $resident->user_id = $user->id;
         model(ResidentModel::class)->save($resident);
@@ -61,4 +67,56 @@ class ResidentUserController extends BaseController
         return redirect()->route('residents.show', [$resident->code])
             ->with('success', 'Sucesso!');
     }
+
+    public function update(string $code): RedirectResponse
+    {
+
+        $resident = model(ResidentModel::class)->getByCode(code: $code, contains: ['user']);
+
+        /** @var User */
+        $user =$resident->user;
+
+        $rules = (new UserValidation)->getRules(id: $user->id);
+
+        $inputRequest = $this->request->getPost();
+        if(empty($inputRequest['password'])){
+            unset($rules['password']);
+            unset($rules['password_confirm']);
+        }
+        
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
+        }
+
+        $fillData = ['email' => $inputRequest['email']];
+        
+        // Só define a senha se ela não estiver vazia
+        if (!empty($inputRequest['password'])) {
+            $fillData['password'] = $inputRequest['password'];
+        }
+        
+        $user->fill($fillData);
+
+        auth()->getProvider()->save($user);
+                  
+        return redirect()->route('residents.show', [$resident->code])
+            ->with('success', 'Sucesso!');
+    }
+
+    public function action(string $code): RedirectResponse
+    {
+
+        $resident = model(ResidentModel::class)->getByCode(code: $code, contains: ['user']);
+
+        /** @var User */
+        $user =$resident->user;
+                   
+        $user->isBanned() ? $user->unBan() : $user->ban('Sua conta está temporariamente bloqueada. Procure o síndico para mais detalhes.');
+
+        return redirect()->back()->with('success', 'Sucesso!');
+    }
+
+
 }

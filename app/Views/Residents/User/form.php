@@ -19,7 +19,22 @@
                 <h6><?php echo $title; ?></h6>               
                     <a href="<?php echo route_to('residents.show', $resident->code); ?>" class="btn btn-outline-secondary">
                         <i class="fas fa-angle-double-left"></i>&nbsp;Detalhes do residente
-                    </a>               
+                    </a>  
+                    
+                    <?php if($resident?->user !== null):?>
+                        <?php echo form_open(
+                                    action: route_to('residents.user.action', $resident->code),
+                                    attributes: ['class' => 'd-inline'],
+                                    hidden: ['_method' => 'PUT']
+                                ); ?>
+
+                                <?php $isBanned = $resident?->user?->isBAnned();?>
+                                <button type="submit" class="btn ms-2 btn-<?php echo $isBanned ? 'primary' : 'danger'; ?>">
+                                <?php echo $isBanned ? 'Liberar' : 'Bloquear'; ?>&nbsp; acesso
+                                </button>  
+                                <?php echo form_close();?>   
+                    <?php endif;?>
+
             </div>
             <div class="card-body">
             <?php echo form_open(
