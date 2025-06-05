@@ -18,7 +18,8 @@ class ResidentModel extends AppModel
         'code'
     ];
 
-    public function getLoggedResident(): Resident {
+    public function getLoggedResident(): Resident 
+    {
         $resident = $this->where('id', auth()->user()->resident_id)->first();
 
         if(!$resident) {
