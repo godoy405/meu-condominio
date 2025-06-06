@@ -19,7 +19,7 @@
           <div class="card mb-4">
             <div class="card-header pb-0">
               <h6><?php echo $title; ?></h6>
-              <a href="<?php echo route_to('$area.new'); ?>" class="btn btn-success float-end">
+              <a href="<?php echo route_to('areas.new'); ?>" class="btn btn-success float-end">
                 <i class="fas fa-plus"></i>&nbsp;Nova
               </a>
             </div>

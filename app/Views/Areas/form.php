@@ -18,13 +18,13 @@
             <div class="card-header pb-0">
                 <h6><?php echo $title; ?></h6>
 
-                <?php if ($resident->code === null): ?>
-                    <a href="<?php echo route_to('residents'); ?>" class="btn btn-outline-secondary">
-                        <i class="fas fa-angle-double-left"></i>&nbsp;Listar residentes
+                <?php if ($area->code === null): ?>
+                    <a href="<?php echo route_to('areas'); ?>" class="btn btn-outline-secondary">
+                        <i class="fas fa-angle-double-left"></i>&nbsp;Listar areas
                     </a>
                 <?php else: ?>
-                    <a href="<?php echo route_to('residents.show', $resident->code); ?>" class="btn btn-outline-secondary">
-                        <i class="fas fa-angle-double-left"></i>&nbsp;Detalhes do residentes
+                    <a href="<?php echo route_to('areas.show', $area->code); ?>" class="btn btn-outline-secondary">
+                        <i class="fas fa-angle-double-left"></i>&nbsp;Detalhes da Área
                     </a>
                 <?php endif; ?>
             </div>
@@ -35,19 +35,19 @@
                     hidden: $hidden ?? []
             ); ?>
             <div class="mb-3">
-                <label for="name">Nome completo</label>
-                <input type="text" class="form-control" required name="name" value="<?php echo old('name', $resident->name) ?>" id="name" placeholder="Nome completo">
+                <label for="name">Nome</label>
+                <input type="text" class="form-control" required name="name" value="<?php echo old('name', $area->name) ?>" id="name" placeholder="Nome">
             </div>
 
             <div class="mb-3">
-                <label for="mobile_phone">Telefone</label>
-                <input type="tel" class="form-control" required name="mobile_phone" value="<?php echo old('mobile_phone', $resident->mobile_phone) ?>" id="mobile_phone" placeholder="Telefone">
-            </div>
-            <div class="mb-3">
-                <label for="apartment">Apartamento</label>
-                <input type="text" class="form-control" required name="apartment" value="<?php echo old('apartment', $resident->apartment) ?>" id="apartment" placeholder="Apartamento">
+                <label for="code">Código</label>
+                <input type="text" class="form-control" required name="code" value="<?php echo old('code', $area->code) ?>" id="code" placeholder="Código da área">
             </div>
 
+            <div class="mb-3">
+                <label for="description">Descrição</label>
+                <textarea class="form-control" name="description" id="description" rows="5"><?php echo old('description', $area->description)?></textarea>
+            </div>         
             <button type="submit" id="btnSubmit" class="btn btn-success">
                 Salvar
             </button>

@@ -12,7 +12,8 @@ class AreaModel  extends AppModel
     protected $returnType       = Area::class;    
     protected $allowedFields    = [        
         'name',
-        'description',        
+        'description',
+        'code',        
     ];      
 
     protected function relateData(object &$area, array $contains = []): void
