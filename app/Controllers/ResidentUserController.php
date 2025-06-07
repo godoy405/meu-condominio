@@ -55,10 +55,16 @@ class ResidentUserController extends BaseController
         // Recupera o usuário completo do banco de dados
         $userId = $userModel->getInsertID();
         if ($userId) {
-            $user = $userModel->findById($userId);
-            if ($user) {
+            $user = $userModel->find($userId);
+            if ($user !== null) {
                 $userModel->addToDefaultGroup($user);
+            } else {
+                log_message('error', 'Usuário não encontrado após inserção. ID: ' . $userId);
+                return redirect()->back()->with('error', 'Erro ao criar usuário. Tente novamente.');
             }
+        } else {
+            log_message('error', 'Erro ao obter ID do usuário criado');
+            return redirect()->back()->with('error', 'Erro ao criar usuário. Tente novamente.');
         }
 
         $resident->user_id = $user->id;

@@ -1,21 +1,17 @@
 <?php
 
-namespace App\Traits\Models;
+namespace App\Traits\Entities;
 
-trait ResidentFilterTrait {
-    public function whereResident(): self 
+trait ResidentFilterTrait
+{
+    public function canBeDeleted(): bool
     {
-
-        /**
-         * Adiciona uma condição de `where` para filtrar registros pelo residente autenticado.
-         * 
-         * 
-         * @return self
-         */
-
-        if (auth()->inGroup('user')) {
-            $this->where("{$this->table}.resident_id", auth()->user()->resident_id);
+        if(auth()->user()->inGroup('superadmin')) {
+            return true;
+           
         }
-        return $this;
+
+        return $this->resident_id === (int) auth()->user()->resident_id;
     }
+
 }

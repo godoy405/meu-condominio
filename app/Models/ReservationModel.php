@@ -10,15 +10,14 @@ use App\Traits\Models\ResidentFilterTrait;
 use App\Models\BillModel;
 
 
-class ReservationModel  extends AppModel
+class ReservationModel extends AppModel
 {
 
     use ResidentFilterTrait;
-    
+
     public function __construct()
     {
         parent::__construct();
-
         $this->beforeInsert = array_merge($this->beforeInsert, ['setInitialData']);
     }
 
@@ -31,12 +30,18 @@ class ReservationModel  extends AppModel
         'status',
         'reason_status',
         'desired_date',    
-    ];   
+    ];  
 
     public function setInitialData(array $data): array
     {
+        $data['data'] ['status']        = Status::PENDING->value;
+        $data['data'] ['reason_status'] = Status::PENDING->label();
+        $data['data'] ['resident_id']   = auth()->user()->resident->id ?? null;
+
         return $data;
+       
     }
+
 
     protected function relateData(object &$area, array $contains = []): void
     {
