@@ -17,7 +17,7 @@
                         <i class="fas fa-angle-double-left"></i>&nbsp;Listar residentes
                     </a>
                     <a href="<?php echo route_to('residents.new'); ?>" class="btn btn-success">
-                        <i class="fas fa-plus"></i>&nbsp;novo
+                        <i class="fas fa-plus"></i>&nbsp;novo residente
                     </a>
                 </div>
                 <div class="card-body">
