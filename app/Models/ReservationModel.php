@@ -36,7 +36,7 @@ class ReservationModel extends AppModel
     {
         $data['data'] ['status']        = Status::PENDING->value;
         $data['data'] ['reason_status'] = Status::PENDING->label();
-        $data['data'] ['resident_id']   = auth()->user()->resident->id ?? null;
+        $data['data'] ['resident_id']   = auth()->user()->resident_id ?? null;
 
         return $data;
        

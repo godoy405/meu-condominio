@@ -20,7 +20,7 @@ class ReservationsController extends BaseController
     public function __construct()
     {
         $this->model = model(ReservationModel::class);
-       
+        $this->notifier = new NotifierService();
     }
 
     /**
@@ -68,7 +68,11 @@ class ReservationsController extends BaseController
         $id = $this->model->insert($reservation);
         $reservation = $this->model->find($id);
 
-        // TODO: notificar síndico que tem  nova reserva
+       $syndic = get_syndic();
+       $to = $syndic->email;
+       $subject = "Nova reserva";
+       $body = "Nova reserva {$reservation->code} foi criada.";
+       $this->notifier->send($to, $subject, $body);
 
         return redirect()->route('reservations.show', [$reservation->code])->with('success', 'Área criada com sucesso!');
     }
@@ -76,16 +80,14 @@ class ReservationsController extends BaseController
     public function show(string $code)
     {
         
-        $reservation = $this->model->getByCode('code', $code, contains: ['']);
+        $reservation = $this->model->getByCode($code, ['resident', 'bill', 'area']);
 
         $data = [
-            'title'       => 'Criar nova reserva',
-            'reservation' => new Reservation(),
-            'areas'        => model(AreaModel::class)->orderBy('name', 'ASC')->findAll(),
-            'route'       => route_to('reservations.create'),
+            'title'       => 'Detalhes da reserva',
+            'reservation' => $reservation,            
         ];
 
-        return view('reservations/form', $data);
+        return view('reservations/show', $data);
     }
  
 

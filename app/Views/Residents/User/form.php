@@ -32,7 +32,7 @@
                                 <button type="submit" class="btn ms-2 btn-<?php echo $isBanned ? 'primary' : 'danger'; ?>">
                                 <?php echo $isBanned ? 'Liberar' : 'Bloquear'; ?>&nbsp; acesso
                                 </button>  
-                                <?php echo form_close();?>   
+                        <?php echo form_close();?>   
                     <?php endif;?>
 
             </div>

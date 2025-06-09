@@ -15,7 +15,13 @@ trait ResidentFilterTrait
     public function whereResident(): self
     {
         if(auth()->user()->inGroup('user')) {
-           $this->where("{$this->table}.resident_id", auth()->user()->resident->id ?? null);
+            $residentId = auth()->user()->resident_id ?? null;
+            if ($residentId) {
+                $this->where("{$this->table}.resident_id", $residentId);
+            } else {
+                // Se não há residente associado, não retorna nenhum registro
+                $this->where("{$this->table}.resident_id", -1);
+            }
         }
 
         return $this;
