@@ -36,9 +36,8 @@ class ReservationsController extends BaseController
             'reservations' => $this->model->all(),
         ];
 
-        return view('reservations/index', $data);   
+        return view('reservations/index', $data);
     }
-
 
     public function new()
     {
@@ -53,43 +52,111 @@ class ReservationsController extends BaseController
         return view('reservations/form', $data);
     }
 
-
-    public function create(): RedirectResponse
+    public function create(): RedirectResponse 
     {
         $rules = (new ReservationValidation)->getRules();
-        
+
         if (!$this->validate($rules)) {
             return redirect()->back()
-                ->withInput()
-                ->with('errors', $this->validator->getErrors());
+                             ->withInput()
+                             ->with('errors', $this->validator->getErrors());
         }
 
         $reservation = new Reservation($this->validator->getValidated());
         $id = $this->model->insert($reservation);
-        $reservation = $this->model->find($id);
+        
+        // Busca a reserva completa com os relacionamentos
+        $reservation = $this->model->select('reservations.*, areas.name as area_name')
+                                 ->join('areas', 'areas.id = reservations.area_id')
+                                 ->asObject(Reservation::class)
+                                 ->find($id);
 
-       $syndic = get_syndic();
-       $to = $syndic->email;
-       $subject = "Nova reserva";
-       $body = "Nova reserva {$reservation->code} foi criada.";
-       $this->notifier->send($to, $subject, $body);
+        // Adiciona o email do usuário autenticado
+        $reservation->resident_email = auth()->user()->email;
 
-        return redirect()->route('reservations.show', [$reservation->code])->with('success', 'Área criada com sucesso!');
+        try {
+            // Enviar notificações
+            if (!$this->notifier->sendReservationCreatedNotification($reservation)) {
+                return redirect()->route('reservations.show', [$reservation->code])
+                                ->with('success', 'Reserva criada com sucesso!')
+                                ->with('warning', 'Não foi possível enviar o email de notificação.');
+            }
+            
+            return redirect()->route('reservations.show', [$reservation->code])
+                             ->with('success', 'Reserva criada com sucesso!');
+        } catch (\Exception $e) {
+            log_message('error', '[Reserva] Erro ao enviar email: ' . $e->getMessage());
+            
+            return redirect()->route('reservations.show', [$reservation->code])
+                             ->with('success', 'Reserva criada com sucesso!')
+                             ->with('warning', 'Não foi possível enviar o email de notificação.');
+        }
     }
 
     public function show(string $code)
     {
-        
-        $reservation = $this->model->getByCode($code, ['resident', 'bill', 'area']);
+        try {
+            $reservation = $this->model->getByCode(code: $code, contains: ['resident', 'bill', 'area']);
+            
+            if ($reservation === null) {
+                throw new \RuntimeException('Reserva não encontrada');
+            }
 
-        $data = [
-            'title'       => 'Detalhes da reserva',
-            'reservation' => $reservation,            
-        ];
+            // Log temporário para debug
+            log_message('debug', 'Dados da reserva: ' . json_encode($reservation));
 
-        return view('reservations/show', $data);
+            $data = [
+                'title'       => "Detalhes da Reserva #{$reservation->code}",
+                'reservation' => $reservation,
+            ];
+
+            return view('reservations/show', $data);
+        } catch (\Exception $e) {
+            log_message('error', '[Erro ao carregar reserva] ' . $e->getMessage());
+            return redirect()->back()
+                            ->with('error', 'Erro ao carregar os detalhes da reserva: ' . $e->getMessage());
+        }
     }
- 
 
- 
+    public function cancel(string $code): RedirectResponse 
+    {
+        try {
+            $reservation = $this->model->getByCode($code);
+            
+            // Adicionando logs para debug
+            log_message('debug', 'Tentando cancelar reserva: ' . $code);
+            log_message('debug', 'Status atual: ' . $reservation->status);
+            
+            if (!$reservation->canBeCanceled()) {
+                log_message('debug', 'Não foi possível cancelar - Status não permite');
+                return redirect()->back()
+                                ->with('error', 'Não é possível cancelar essa reserva. Status atual: ' . $reservation->status());
+            }
+            
+            if ($this->model->markAs(code: $reservation->code, status: Status::CANCELLED)) {
+                // Adiciona o email do usuário autenticado
+                $reservation->resident_email = auth()->user()->email;
+
+                // Enviar notificações
+                if (!$this->notifier->sendCancellationNotification($reservation, 'Cancelamento solicitado pelo usuário')) {
+                    return redirect()->route('reservations.show', [$reservation->code])
+                                    ->with('success', 'Reserva cancelada com sucesso!')
+                                    ->with('warning', 'Não foi possível enviar o email de notificação.');
+                }
+
+                return redirect()->route('reservations.show', [$reservation->code])
+                                ->with('success', 'Reserva cancelada com sucesso!');
+            }
+
+            return redirect()->back()
+                            ->with('error', 'Não foi possível cancelar a reserva. Tente novamente.');
+            
+        } catch (\Exception $e) {
+            log_message('error', '[Reserva] Erro ao cancelar: ' . $e->getMessage());
+            return redirect()->back()
+                            ->with('error', 'Erro ao processar o cancelamento: ' . $e->getMessage());
+        }
+    }
+
+
 }

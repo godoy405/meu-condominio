@@ -34,12 +34,11 @@ class ReservationModel extends AppModel
 
     public function setInitialData(array $data): array
     {
-        $data['data'] ['status']        = Status::PENDING->value;
-        $data['data'] ['reason_status'] = Status::PENDING->label();
-        $data['data'] ['resident_id']   = auth()->user()->resident_id ?? null;
+        $data['data']['status'] = Status::PENDING;
+        $data['data']['reason_status'] = 'Pendente'; // Valor fixo em vez de ->label()
+        $data['data']['resident_id'] = auth()->user()->resident_id ?? null;
 
         return $data;
-       
     }
 
     public function all(): array 
@@ -94,12 +93,11 @@ class ReservationModel extends AppModel
         
     }
 
-    public function markAs(string $code, Status $status): bool
+    public function markAs(string $code, string $status): bool
     {
-
-        $data =  [
-            'status'        => $status->value,
-            'reason_status' => $status->label(),
+        $data = [
+            'status' => $status,
+            // Se precisar de label, ajuste conforme necessário
         ];
 
         return $this->set($data)      

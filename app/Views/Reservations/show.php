@@ -17,24 +17,22 @@
                         <i class="fas fa-angle-double-left"></i>&nbsp;Listar reservas
                     </a>
                     <?php if(auth()->user()->inGroup('user')): ?>
-                        <a href="<?php echo route_to('reservations.new'); ?>" class="btn ms-2 btn-success">
-                            <i class="fas fa-plus"></i>&nbsp;Nova Reserva
-                        </a>
+                        <div class="mb-3">
+                            <a href="<?php echo route_to('reservations.new'); ?>" class="btn btn-success">+ Nova</a>
+                            <?php echo form_open(
+                                action: route_to('reservations.cancel', $reservation->code),
+                                attributes: ['class' => 'd-inline ms-2', 'onsubmit' => 'return confirm("Tem certeza que deseja cancelar essa reserva?");'],
+                                hidden: ['_method' => 'PUT']
+                            ); ?>
+                                <button type="submit" class="btn btn-danger">
+                                    Cancelar
+                                </button>
+                            <?php echo form_close(); ?><p><strong>Pode cancelar:</strong> <?php echo $reservation->canBeCanceled() ? 'Sim' : 'Não'; ?></p>
+                        </div>
                     <?php endif; ?>
 
-                    <?php if($reservation->canBeCanceled()):?>
-                        <?php echo form_open(
-                                    action: route_to('reservations.cancel', $reservation->code),
-                                    attributes: ['class' => 'd-inline', 'onsubmit' => 'return confirm("Tem certeza que deseja excluir esse residente?");'],
-                                    hidden: ['_method' => 'PUT']
-                                ); ?>                                
-                                <button type="submit" class="btn ms-2 btn-danger">                                  
-                                  Cancelar reserva
-                                </button>  
-                        <?php echo form_close();?>   
-                    <?php endif;?>
-
-
+                    <!-- Debug temporário - remover depois -->
+                    <p><strong>Status atual:</strong> <?php echo $reservation->status; ?></p>                   
                 </div>
                 <div class="card-body">                
                     <p><strong>Área: </strong><?php echo $reservation?->area?->name; ?></p>

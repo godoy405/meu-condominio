@@ -32,4 +32,27 @@ class NotifierService
             log_message('error', 'Exceção ao enviar email: ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Envia uma notificação de cancelamento de reserva
+     *
+     * @param object $reservation Objeto da reserva
+     * @param string $reason Motivo do cancelamento
+     * @return bool
+     */
+    public function sendCancellationNotification(object $reservation, string $reason): bool
+    {
+        try {
+            $syndic = get_syndic();
+            $to = $syndic->email;
+            $subject = "Cancelamento de reserva";
+            $body = "A reserva {$reservation->code} foi cancelada. Motivo: {$reason}";
+            
+            $this->send($to, $subject, $body);
+            return true;
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao enviar notificação de cancelamento: ' . $e->getMessage());
+            return false;
+        }
+    }
 }
