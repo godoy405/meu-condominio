@@ -1,3 +1,7 @@
+<?php
+use App\Enum\Reservation\Status;
+?>
+
 <?php echo $this->extend('Layouts/main'); ?>
 
 <?php echo $this->section('title'); ?>
@@ -19,15 +23,18 @@
                     <?php if(auth()->user()->inGroup('user')): ?>
                         <div class="mb-3">
                             <a href="<?php echo route_to('reservations.new'); ?>" class="btn btn-success">+ Nova</a>
-                            <?php echo form_open(
-                                action: route_to('reservations.cancel', $reservation->code),
-                                attributes: ['class' => 'd-inline ms-2', 'onsubmit' => 'return confirm("Tem certeza que deseja cancelar essa reserva?");'],
-                                hidden: ['_method' => 'PUT']
-                            ); ?>
-                                <button type="submit" class="btn btn-danger">
-                                    Cancelar
-                                </button>
-                            <?php echo form_close(); ?><p><strong>Pode cancelar:</strong> <?php echo $reservation->canBeCanceled() ? 'Sim' : 'Não'; ?></p>
+                            <?php if($reservation->status !== Status::CANCELLED): ?>
+                                <?php echo form_open(
+                                    action: route_to('reservations.cancel', $reservation->code),
+                                    attributes: ['class' => 'd-inline ms-2', 'onsubmit' => 'return confirm("Tem certeza que deseja cancelar essa reserva?");'],
+                                    hidden: ['_method' => 'PUT']
+                                ); ?>
+                                    <button type="submit" class="btn btn-danger">
+                                        Cancelar
+                                    </button>
+                                <?php echo form_close(); ?>
+                            <?php endif; ?>
+                            <p><strong>Pode cancelar:</strong> <?php echo $reservation->canBeCanceled() ? 'Sim' : 'Não'; ?></p>
                         </div>
                     <?php endif; ?>
 
