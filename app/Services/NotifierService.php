@@ -34,6 +34,28 @@ class NotifierService
     }
     
     /**
+     * Envia uma notificação de criação de reserva
+     *
+     * @param object $reservation Objeto da reserva
+     * @return bool
+     */
+    public function sendReservationCreatedNotification(object $reservation): bool
+    {
+        try {
+            $syndic = get_syndic();
+            $to = $syndic->email;
+            $subject = "Nova reserva criada";
+            $body = "Uma nova reserva foi criada com o código {$reservation->code} para a área {$reservation->area_name}.";
+            
+            $this->send($to, $subject, $body);
+            return true;
+        } catch (\Exception $e) {
+            log_message('error', 'Erro ao enviar notificação de criação de reserva: ' . $e->getMessage());
+            return false;
+        }
+    }
+    
+    /**
      * Envia uma notificação de cancelamento de reserva
      *
      * @param object $reservation Objeto da reserva

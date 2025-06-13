@@ -410,6 +410,54 @@
 
   <?php echo $this->include('Layouts/_session_messages'); ?>
 
+
+  <script>
+        // Função para formatar o valor como moeda
+        function formatCurrency(value) {
+            // Verifica se o valor é nulo ou indefinido
+            if (value == null) return 'R$ 0,00';
+
+            // Verifica se o valor é do tipo número e converte para string se necessário
+            if (typeof value === 'number') {
+                value = value.toString();
+            }
+
+            // Remove todos os caracteres não numéricos
+            value = value.replace(/\D/g, '');
+            // Divide o valor por 100 e fixa em duas casas decimais
+            value = (value / 100).toFixed(2) + '';
+            // Substitui o ponto decimal por uma vírgula
+            value = value.replace('.', ',');
+            // Adiciona pontos como separadores de milhares
+            value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            // Retorna o valor formatado com o símbolo R$
+            return `R$ ${value}`;
+        }
+
+        // Função para aplicar a formatação nos inputs
+        function applyCurrencyFormat() {
+            // Seleciona todos os inputs com a classe price_formatted
+            const inputs = document.querySelectorAll('.price_formatted');
+
+            inputs.forEach(input => {
+                // Aplica a formatação quando a página carrega
+                input.value = formatCurrency(input.value);
+
+                // Aplica a formatação enquanto o usuário digita
+                input.addEventListener('input', () => {
+                    // Formata o valor atual do input
+                    input.value = formatCurrency(input.value);
+
+                    // Move o cursor para o final do input
+                    input.setSelectionRange(input.value.length, input.value.length);
+                });
+            });
+        }
+
+        // Adiciona o evento de carregamento da página para aplicar a formatação
+        window.addEventListener('load', applyCurrencyFormat);
+    </script>
+
   <!--  <script>      
         Toastify({
           text: "Gilberto",

@@ -88,7 +88,7 @@ class ReservationModel extends AppModel
         }
 
         if (in_array('area', $contains)) {           
-            $reservation->resident = model(AreaModel::class)->where('id', $reservation->area_id)->first();
+            $reservation->area = model(AreaModel::class)->where('id', $reservation->area_id)->first();
         }
         
     }

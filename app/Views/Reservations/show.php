@@ -33,8 +33,7 @@ use App\Enum\Reservation\Status;
                                         Cancelar
                                     </button>
                                 <?php echo form_close(); ?>
-                            <?php endif; ?>
-                            <p><strong>Pode cancelar:</strong> <?php echo $reservation->canBeCanceled() ? 'Sim' : 'Não'; ?></p>
+                            <?php endif; ?>                            
                         </div>
                     <?php endif; ?>
 
