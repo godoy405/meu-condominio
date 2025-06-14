@@ -38,23 +38,28 @@ class ReservationsBillsController extends BaseController
             'title'       => $reservation->bill === null ? 'Criar cobrança' : 'Editar cobrança',
             'reservation' => $reservation,
             'route'       => $route,
-            'hidden'      => $reservation->bill !-- null ? ['_method' => 'PUT'] : [],
+            'hidden'      => $reservation->bill !== null ? ['_method' => 'PUT'] : [],
         ];
         
-        return view('Reservation/Bill/form', $data);
+        return view('Residents/Bill/form', $data); // Em vez de 'reservations/form'
     }
 
     public function new()
     {
+        $reservation = new Reservation();
+        $reservation->bill = null; // Definindo explicitamente como null
+        
+        // Adicione um residente vazio ou obtenha um residente válido
+        $resident = new \App\Entities\Resident();
         
         $data = [
-            'title'       => $reservation->bill === null ? 'Criar cobrança' : 'Editar cobrança',
-            'reservation' => new Reservation(),
-            'areas'        => model(AreaModel::class)->orderBy('name', 'ASC')->findAll(),
-            'route'       => route_to('reservations.create'),
+            'title'       => 'Criar cobrança',
+            'reservation' => $reservation,
+            'resident'    => $resident, // Adicionando o residente aos dados
+            'route'       => route_to('reservations.bills.create'),
         ];
-
-        return view('reservations/form', $data);
+    
+        return view('Residents/Bill/form', $data); // Corrigido para a view correta
     }
 
     public function create(): RedirectResponse 
@@ -163,5 +168,16 @@ class ReservationsBillsController extends BaseController
         }
     }
 
-
+    public function update(string $code): RedirectResponse
+    {
+        // Implementação do método update
+        // Exemplo básico:
+        $reservation = $this->model->getByCode(code: $code, contains: ['resident', 'bill', 'area']);
+        
+        // Lógica para atualizar a cobrança
+        // ...
+        
+        return redirect()->route('reservations.show', [$reservation->code])
+                         ->with('success', 'Cobrança atualizada com sucesso!');
+    }
 }

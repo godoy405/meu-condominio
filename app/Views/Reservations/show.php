@@ -20,23 +20,23 @@ use App\Enum\Reservation\Status;
                     <a href="<?php echo route_to('reservations'); ?>" class="btn btn-outline-secondary">
                         <i class="fas fa-angle-double-left"></i>&nbsp;Listar reservas
                     </a>
-                    <?php if(auth()->user()->inGroup('user')): ?>
-                        <div class="mb-3">
+                    <div class="mb-3">
+                        <?php if(auth()->user()->inGroup('user')): ?>
                             <a href="<?php echo route_to('reservations.new'); ?>" class="btn btn-success">+ Nova</a>
-                            <?php if($reservation->status !== Status::CANCELLED): ?>
-                                <?php echo form_open(
-                                    action: route_to('reservations.cancel', $reservation->code),
-                                    attributes: ['class' => 'd-inline ms-2', 'onsubmit' => 'return confirm("Tem certeza que deseja cancelar essa reserva?");'],
-                                    hidden: ['_method' => 'PUT']
-                                ); ?>
-                                    <button type="submit" class="btn btn-danger">
-                                        Cancelar
-                                    </button>
-                                <?php echo form_close(); ?>
-                            <?php endif; ?>                            
-                        </div>
-                    <?php endif; ?>
-
+                        <?php endif; ?>
+                        
+                        <?php if((auth()->user()->inGroup('user') || auth()->user()->inGroup('admin') || auth()->user()->inGroup('superadmin')) && $reservation->status !== Status::CANCELLED): ?>
+                            <?php echo form_open(
+                                action: route_to('reservations.cancel', $reservation->code),
+                                attributes: ['class' => 'd-inline ms-2', 'onsubmit' => 'return confirm("Tem certeza que deseja cancelar essa reserva?");'],
+                                hidden: ['_method' => 'PUT']
+                            ); ?>
+                                <button type="submit" class="btn btn-danger">
+                                    Cancelar
+                                </button>
+                            <?php echo form_close(); ?>
+                        <?php endif; ?>                            
+                    </div>
                     <!-- Debug temporário - remover depois -->
                     <p><strong>Status atual:</strong> <?php echo $reservation->status; ?></p>                   
                 </div>

@@ -1,23 +1,40 @@
-<div class="mb-3">
-    <label for="amount">Valor da Cobrança</label>
-    <input type="text" class="form-control price_formatted" name="amount" value="<?php echo old('amount', $bill?->amount); ?>" id="amount" />
-</div>
+<?php
 
-<div class="mb-3">
-    <label for="due_date">Data de vencimento</label>
-    <input type="date" class="form-control" name="due_date" value="<?php echo old('due_date', $bill?->due_date?->format('Y-m-d')); ?>" id="due_date" />
-</div>
+namespace App\Cells\Bills;
 
-<div class="mb-3">
-    <label for="status">Status do pagamento</label>
-    <select name="status" id="status" class="form-control" required>
-        <option value="">---Escolha---</option>
-        <option value="paid" <?php echo $bill?->isPaid() ? 'selected' : ''; ?> >Pago</option>
-        <option value="pending" <?php echo !$bill?->isPaid() ? 'selected' : ''; ?> >Pendente</option>
-    </select>
-</div>
+use App\Entities\Bill;
+use CodeIgniter\View\Cells\Cell;
 
-<div class="mb-3">
-    <label for="notes">Observações da cobrança</label>
-    <textarea name="notes" id="notes" rows="5" class="form-control"><?php echo old('notes', $bill?->notes); ?></textarea>
-</div>
+class FormInputsCell extends Cell
+{
+   protected ? Bill $bill = null;
+
+   public function getBillProperty(): ? Bill
+   {
+      return $this->bill;
+   }
+   
+   public function render(): string
+   {
+      // Caminho absoluto para o arquivo de template
+      $viewPath = APPPATH . 'Cells/Bills/form_inputs.php';
+      
+      // Garantir que $this->data seja um array
+      $data = $this->data ?? [];
+      
+      // Adicionar a propriedade $bill ao array de dados
+      $data['bill'] = $this->bill;
+      
+      // Extrair os dados para o template
+      extract($data);
+      
+      // Iniciar o buffer de saída
+      ob_start();
+      
+      // Incluir o arquivo de template
+      include $viewPath;
+      
+      // Retornar o conteúdo do buffer
+      return ob_get_clean();
+   }
+}
