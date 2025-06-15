@@ -30,11 +30,11 @@ class Reservation extends Entity
         log_message('debug', 'Status atual na verificação canBeCanceled: ' . $this->status);
         log_message('debug', 'Status::PENDING: ' . Status::PENDING);
         
-        // Forçar retorno true para teste
-        return true; // Temporariamente retorne true para testar o fluxo
+        // Remova esta linha após os testes
+        // return true; // Temporariamente retorne true para testar o fluxo
         
-        // Depois que funcionar, você pode voltar para a verificação normal:
-        // return $this->status === Status::PENDING;
+        // Descomente esta linha para a verificação real
+        return $this->status === Status::PENDING;
     }
 
     public function status(): string

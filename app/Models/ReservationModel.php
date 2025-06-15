@@ -79,8 +79,8 @@ class ReservationModel extends AppModel
     protected function relateData(object &$reservation, array $contains = []): void
     {
         if (in_array('bill', $contains)) {
-           // TODO: buscar a cobrança associada a essa reserva
-           // $reservation->bill =
+         
+           $reservation->bill = model(BillModel::class)->where('reservation_id', $reservation->id)->first();
         } 
 
         if (in_array('resident', $contains)) {           

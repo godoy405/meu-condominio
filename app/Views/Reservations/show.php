@@ -1,4 +1,6 @@
 <?php
+
+use App\Cells\Bills\DetailCell;
 use App\Enum\Reservation\Status;
 ?>
 
@@ -46,7 +48,7 @@ use App\Enum\Reservation\Status;
                     <p><strong>Status: </strong><?php echo $reservation->status(); ?></p>
                     <p><strong>Razão status: </strong><?php echo $reservation->reason_status; ?></p>
                     <p><strong>Dados da cobrança</strong><br>
-                        [][] ****** DADOS DA COBRANÇA [][]
+                       <?php echo view_cell(library: DetailCell::class, params: ['bill' => $reservation?->bill]) ?>
                     </p>
                     <p><strong>Residente: </strong><?php echo $reservation?->resident?->name; ?></p>
                     <p><strong>Criada: </strong><?php echo $reservation->created_at->humanize(); ?></p>

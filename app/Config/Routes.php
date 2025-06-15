@@ -3,9 +3,10 @@
 use App\Controllers\HomeController;
 use CodeIgniter\Router\RouteCollection;
 use App\Controllers\AreasController;
+use App\Controllers\ResidentsController; // Adicionando a importação do controlador
 use App\Controllers\ResidentUserController;
 use App\Controllers\ReservationsController;
-use App\Controllers\ReservationsBillsController; // Adicione esta linha
+use App\Controllers\ReservationsBillsController;
 
 /**
  * @var RouteCollection $routes
@@ -18,10 +19,10 @@ $routes->group('residents', ['filter' => 'group:superadmin'], static function ($
     $routes->get('/', [ResidentsController::class, 'index'], ['as' => 'residents']);
     $routes->get('new', [ResidentsController::class, 'new'], ['as' => 'residents.new']);
     $routes->post('create', [ResidentsController::class, 'create'], ['as' => 'residents.create']);
-    $routes->get('show/(:segment)', [ResidentsController::class, 'show/$1'], ['as' => 'residents.show']);
-    $routes->get('edit/(:segment)', [ResidentsController::class, 'edit/$1'], ['as' => 'residents.edit']);
-    $routes->put('update/(:segment)', [ResidentsController::class, 'update/$1'], ['as' => 'residents.update']);
-    $routes->delete('destroy/(:segment)', [ResidentsController::class, 'destroy/$1'], ['as' => 'residents.destroy']);
+    $routes->get('show/(:segment)', [ResidentsController::class, 'show'], ['as' => 'residents.show']); // Corrigido
+    $routes->get('edit/(:segment)', [ResidentsController::class, 'edit'], ['as' => 'residents.edit']); // Corrigido
+    $routes->put('update/(:segment)', [ResidentsController::class, 'update'], ['as' => 'residents.update']); // Corrigido
+    $routes->delete('destroy/(:segment)', [ResidentsController::class, 'destroy'], ['as' => 'residents.destroy']); // Corrigido
 
     // rotas para gerenciamento do user do residente
 
@@ -55,9 +56,9 @@ $routes->group('reservations', static function ($routes) {
 
     
     // rotas das cobranças das reservas
-    $routes->group('bills', ['filter' => 'group:superadmin,admin'], static function ($routes) { // Adicionado grupo admin
+    $routes->group('bills', ['filter' => 'group:superadmin'], static function ($routes) { // Adicionado grupo admin
         $routes->get('(:segment)', [ReservationsBillsController::class, 'index/$1'], ['as' => 'reservations.bills']);        
-        $routes->post('create', [ReservationsBillsController::class, 'create'], ['as' => 'reservations.bills.create']);           
+        $routes->post('create/(:segment)', [ReservationsBillsController::class, 'create/$1'], ['as' => 'reservations.bills.create']);           
         $routes->put('update/(:segment)', [ReservationsBillsController::class, 'update/$1'], ['as' => 'reservations.bills.update']);
     });
   

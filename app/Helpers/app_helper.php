@@ -1,6 +1,11 @@
 <?php
 use CodeIgniter\Shield\Entities\User;
 
+// Carregando o helper de número do CodeIgniter de forma correta
+if (!function_exists('number_to_currency')) {
+    helper('number');
+}
+
 if(! function_exists('get_syndic')){
 
     function get_syndic() : User {

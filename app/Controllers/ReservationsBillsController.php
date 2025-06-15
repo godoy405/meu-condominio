@@ -5,10 +5,13 @@ namespace App\Controllers;
 use App\Services\NotifierService;
 use App\Controllers\BaseController;
 use App\Models\ReservationModel;
+use App\Models\BillModel; // Adicionando o modelo BillModel
 use App\Validation\ReservationValidation;
+use App\Validation\BillValidation;
 use App\Helpers\app_helper;
 use CodeIgniter\HTTP\RedirectResponse;
 use App\Entities\Reservation;
+use App\Entities\Bill; // Adicionando a entidade Bill
 use App\Models\AreaModel;
 use App\Enum\Reservation\Status;
 
@@ -16,11 +19,13 @@ class ReservationsBillsController extends BaseController
 {
     private ReservationModel $model;
     private NotifierService $notifier;
+    private BillModel $billModel; // Adicionando o modelo de fatura
 
     public function __construct()
     {
         $this->model = model(ReservationModel::class);
         $this->notifier = new NotifierService();
+        $this->billModel = model(BillModel::class); // Inicializando o modelo de fatura
     }
 
     /**
@@ -62,9 +67,11 @@ class ReservationsBillsController extends BaseController
         return view('Residents/Bill/form', $data); // Corrigido para a view correta
     }
 
-    public function create(): RedirectResponse 
+    public function create(string $code): RedirectResponse 
     {
-        $rules = (new ReservationValidation)->getRules();
+        $rules = (new BillValidation)->getRules();
+        unset($rules['resident_id']); // Removendo a validação de resident_id para evitar duplicidade
+
 
         if (!$this->validate($rules)) {
             return redirect()->back()
@@ -72,112 +79,63 @@ class ReservationsBillsController extends BaseController
                              ->with('errors', $this->validator->getErrors());
         }
 
-        $reservation = new Reservation($this->validator->getValidated());
-        $id = $this->model->insert($reservation);
+        $reservation = $this->model->getByCode(code: $code);
+       
+        $bill = new Bill($this->validator->getValidated());
+        $bill->reservation_id = $reservation->id; // Corrigido: usando o ID da reserva
+        $bill->resident_id = $reservation->resident_id;
         
-        // Busca a reserva completa com os relacionamentos
-        $reservation = $this->model->select('reservations.*, areas.name as area_name')
-                                 ->join('areas', 'areas.id = reservations.area_id')
-                                 ->asObject(Reservation::class)
-                                 ->find($id);
 
-        // Adiciona o email do usuário autenticado
-        $reservation->resident_email = auth()->user()->email;
+        $id = model(BillModel::class)->insert($bill);
+        $bill = model(BillModel::class)->find($id);
 
-        try {
-            // Enviar notificações
-            if (!$this->notifier->sendReservationCreatedNotification($reservation)) {
-                return redirect()->route('reservations.show', [$reservation->code])
-                                ->with('success', 'Reserva criada com sucesso!')
-                                ->with('warning', 'Não foi possível enviar o email de notificação.');
-            }
-            
-            return redirect()->route('reservations.show', [$reservation->code])
-                             ->with('success', 'Reserva criada com sucesso!');
-        } catch (\Exception $e) {
-            log_message('error', '[Reserva] Erro ao enviar email: ' . $e->getMessage());
-            
-            return redirect()->route('reservations.show', [$reservation->code])
-                             ->with('success', 'Reserva criada com sucesso!')
-                             ->with('warning', 'Não foi possível enviar o email de notificação.');
-        }
-    }
+        $this->updateReservationStatus(reservation: $reservation, bill: $bill);
+        
 
-    public function show(string $code)
-    {
-        try {
-            $reservation = $this->model->getByCode(code: $code, contains: ['resident', 'bill', 'area']);
-            
-            if ($reservation === null) {
-                throw new \RuntimeException('Reserva não encontrada');
-            }
-
-            // Log temporário para debug
-            log_message('debug', 'Dados da reserva: ' . json_encode($reservation));
-
-            $data = [
-                'title'       => "Detalhes da Reserva #{$reservation->code}",
-                'reservation' => $reservation,
-            ];
-
-            return view('reservations/show', $data);
-        } catch (\Exception $e) {
-            log_message('error', '[Erro ao carregar reserva] ' . $e->getMessage());
-            return redirect()->back()
-                            ->with('error', 'Erro ao carregar os detalhes da reserva: ' . $e->getMessage());
-        }
-    }
-
-    public function cancel(string $code): RedirectResponse 
-    {
-        try {
-            $reservation = $this->model->getByCode($code);
-            
-            // Adicionando logs para debug
-            log_message('debug', 'Tentando cancelar reserva: ' . $code);
-            log_message('debug', 'Status atual: ' . $reservation->status);
-            
-            if (!$reservation->canBeCanceled()) {
-                log_message('debug', 'Não foi possível cancelar - Status não permite');
-                return redirect()->back()
-                                ->with('error', 'Não é possível cancelar essa reserva. Status atual: ' . $reservation->status());
-            }
-            
-            if ($this->model->markAs(code: $reservation->code, status: Status::CANCELLED)) {
-                // Adiciona o email do usuário autenticado
-                $reservation->resident_email = auth()->user()->email;
-
-                // Enviar notificações
-                if (!$this->notifier->sendCancellationNotification($reservation, 'Cancelamento solicitado pelo usuário')) {
-                    return redirect()->route('reservations.show', [$reservation->code])
-                                    ->with('success', 'Reserva cancelada com sucesso!')
-                                    ->with('warning', 'Não foi possível enviar o email de notificação.');
-                }
-
-                return redirect()->route('reservations.show', [$reservation->code])
-                                ->with('success', 'Reserva cancelada com sucesso!');
-            }
-
-            return redirect()->back()
-                            ->with('error', 'Não foi possível cancelar a reserva. Tente novamente.');
-            
-        } catch (\Exception $e) {
-            log_message('error', '[Reserva] Erro ao cancelar: ' . $e->getMessage());
-            return redirect()->back()
-                            ->with('error', 'Erro ao processar o cancelamento: ' . $e->getMessage());
-        }
+                      
+        // Redirecionando para a página da reserva após criar a fatura
+        return redirect()->route('reservations.show', [$reservation->code])
+                         ->with('success', 'Cobrança criada com sucesso!');
     }
 
     public function update(string $code): RedirectResponse
     {
-        // Implementação do método update
-        // Exemplo básico:
-        $reservation = $this->model->getByCode(code: $code, contains: ['resident', 'bill', 'area']);
+        $rules = (new BillValidation)->getRules();
+        unset($rules['resident_id']); // Removendo a validação de resident_id para evitar duplicidade
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                             ->withInput()
+                             ->with('errors', $this->validator->getErrors());
+        }
+
+        $reservation = $this->model->getByCode(code: $code, contains: ['bill']);
         
-        // Lógica para atualizar a cobrança
-        // ...
-        
+        if ($reservation->bill === null) {
+            return redirect()->back()
+                             ->with('error', 'Não existe cobrança para esta reserva');
+        }
+
+        $bill = $reservation->bill;
+        $bill->fill($this->validator->getValidated());
+
+        $this->billModel->save($bill);
+        $this->updateReservationStatus(reservation: $reservation, bill: $bill);
+
         return redirect()->route('reservations.show', [$reservation->code])
                          ->with('success', 'Cobrança atualizada com sucesso!');
     }
+
+    private function updateReservationStatus(Reservation $reservation, Bill $bill): void
+    {
+        $reservation->status = Status::CONFIRMED; // Corrigido: usando a constante diretamente
+
+        $reservation->reason_status = $bill->isPaid() ? 'Pagamento da reserva realizado': 'Aguardando pagamento da reserva'; 
+
+        $this->model->save($reservation);
+
+        // todo: o aluno pode disparar notificações para o residente.
+    }
+ 
+   
 }

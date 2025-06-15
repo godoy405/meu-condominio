@@ -12,7 +12,7 @@ class Bill extends Entity
         'reservation_id' => '?integer',
         'resident_id'    => '?integer',
         'code'           => '?string',
-        'due_date'       => '?date',
+        'due_date'       => 'datetime', // Alterado de '?date' para 'datetime'
         'status'         => '?string',
         'amount'         => '?float',
         'created_at'     => 'datetime',
@@ -37,7 +37,7 @@ class Bill extends Entity
         return $this;
     }
 
-    public function amount(string $amount): string 
+    public function amount(): string 
     {
        return show_price($this->attributes['amount']);
     }
@@ -48,9 +48,22 @@ class Bill extends Entity
     }
 
 
+    public function setDueDate($date): self
+    {
+        if (empty($date)) {
+            $this->attributes['due_date'] = null;
+        } else if (is_string($date)) {
+            $this->attributes['due_date'] = new \DateTime($date);
+        } else {
+            // Já é um objeto DateTime ou Time
+            $this->attributes['due_date'] = $date;
+        }
+        return $this;
+    }
+
     public function dueDate(): string 
     {
-       return $this->attributes['due_date']->format('d/m/Y');
+       return $this->attributes['due_date'] instanceof \DateTime ? $this->attributes['due_date']->format('d/m/Y') : '';
     }
 
 
@@ -61,4 +74,8 @@ class Bill extends Entity
     }
         
     
+    public function notes(): string
+    {
+        return $this->attributes['notes'] ?? '';
+    }
 }
