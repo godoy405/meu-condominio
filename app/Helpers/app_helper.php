@@ -23,6 +23,6 @@ if(!function_exists('show_price')) {
 
     function show_price(int|float $price): string
     {
-        return number_to_currency(num: $price, currency: 'BRL', fraction: 2);
+        return number_to_currency(num: $price / 100, currency: 'BRL', fraction: 2);
     }
 }

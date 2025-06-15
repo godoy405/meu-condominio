@@ -39,22 +39,33 @@ use App\Enum\Reservation\Status;
                             <?php echo form_close(); ?>
                         <?php endif; ?>                            
                     </div>
-                    <!-- Debug temporário - remover depois -->
-                    <p><strong>Status atual:</strong> <?php echo $reservation->status; ?></p>                   
+                                  
                 </div>
-                <div class="card-body">                
-                    <p><strong>Área: </strong><?php echo $reservation?->area?->name; ?></p>
-                    <p><strong>Data ehora desejados: </strong><?php echo $reservation->desired_date; ?></p>
-                    <p><strong>Status: </strong><?php echo $reservation->status(); ?></p>
-                    <p><strong>Razão status: </strong><?php echo $reservation->reason_status; ?></p>
-                    <p><strong>Dados da cobrança</strong><br>
-                       <?php echo view_cell(library: DetailCell::class, params: ['bill' => $reservation?->bill]) ?>
-                    </p>
-                    <p><strong>Residente: </strong><?php echo $reservation?->resident?->name; ?></p>
-                    <p><strong>Criada: </strong><?php echo $reservation->created_at->humanize(); ?></p>
-                    <p><strong>Atualizada: </strong><?php echo $reservation->updated_at->humanize(); ?></p>
-                    <p><strong>Observações do residente: </strong><?php echo $reservation->notes; ?></p>  
-
+                <div class="card-body"> 
+                    <div class= "row">
+                            <div class="col-md-6">
+                                <p><strong>Área: </strong><?php echo $reservation?->area?->name; ?></p>
+                                <p><strong>Data e hora desejados: </strong><?php echo $reservation->desired_date; ?></p>
+                                <p><strong>Status: </strong><?php echo $reservation->status(); ?></p>
+                                <p><strong>Razão status: </strong><?php echo $reservation->reason_status; ?></p>
+                                <p><strong>Residente: </strong><?php echo $reservation?->resident?->name; ?></p>
+                                <p><strong>Criada: </strong><?php echo $reservation->created_at->humanize(); ?></p>
+                                <p><strong>Atualizada: </strong><?php echo $reservation->updated_at->humanize(); ?></p>
+                                <p><strong>Observações do residente: </strong><?php echo $reservation->notes; ?></p>  
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Dados da cobrança</strong><br>
+                                    <?php if($reservation?->bill === null):?>
+                                        <div class="alert bg-warning">
+                                            Reserva sem cobrança no momento.
+                                        </div> 
+                                    <?php else: ?>
+                                        <?php echo view_cell(library: DetailCell::class, params: ['bill' => $reservation?->bill]) ?>
+                                    <?php endif; ?>                                    
+                                    
+                                </p>
+                            </div>
+                    </div>                 
                     <?php if(auth()->user()->inGroup('superadmin')): ?>
                         <a href="<?php echo route_to('reservations.bills', $reservation->code); ?>" class="btn btn-primary">
                             Gerenciar cobrança

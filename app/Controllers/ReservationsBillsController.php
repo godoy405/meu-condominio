@@ -117,9 +117,44 @@ class ReservationsBillsController extends BaseController
         }
 
         $bill = $reservation->bill;
-        $bill->fill($this->validator->getValidated());
+        $validatedData = $this->validator->getValidated();
+        
+        // Log para depuração - antes de processar
+        log_message('debug', 'Dados validados: ' . print_r($validatedData, true));
+        log_message('debug', 'Data de vencimento antes: ' . print_r($bill->attributes['due_date'] ?? 'null', true));
+        
+        // Processar cada campo individualmente para garantir que sejam tratados corretamente
+        if (isset($validatedData['status'])) {
+            $bill->status = $validatedData['status'];
+        }
+        
+        if (isset($validatedData['amount'])) {
+            $bill->setAmount($validatedData['amount']);
+        }
+        
+        if (isset($validatedData['notes'])) {
+            $bill->notes = $validatedData['notes'];
+        }
+        
+        // Tratar a data de vencimento explicitamente
+        if (isset($validatedData['due_date']) && !empty($validatedData['due_date'])) {
+            // Forçar o formato correto da data
+            $dateObj = new \DateTime($validatedData['due_date']);
+            $bill->setDueDate($dateObj);
+            
+            // Log para depuração - após processar a data
+            log_message('debug', 'Data de vencimento após setDueDate: ' . print_r($bill->attributes['due_date'] ?? 'null', true));
+        }
+        
+        // Não usar o método fill() para evitar problemas com o processamento da data
+        // $bill->fill($validatedData);
 
         $this->billModel->save($bill);
+        
+        // Log para depuração - após salvar
+        $updatedBill = $this->billModel->find($bill->id);
+        log_message('debug', 'Data de vencimento após save: ' . print_r($updatedBill->attributes['due_date'] ?? 'null', true));
+        
         $this->updateReservationStatus(reservation: $reservation, bill: $bill);
 
         return redirect()->route('reservations.show', [$reservation->code])

@@ -53,17 +53,49 @@ class Bill extends Entity
         if (empty($date)) {
             $this->attributes['due_date'] = null;
         } else if (is_string($date)) {
-            $this->attributes['due_date'] = new \DateTime($date);
-        } else {
-            // Já é um objeto DateTime ou Time
+            try {
+                $this->attributes['due_date'] = new \DateTime($date);
+                // Log para depuração
+                log_message('debug', 'setDueDate de string: ' . $date . ' para ' . print_r($this->attributes['due_date'], true));
+            } catch (\Exception $e) {
+                log_message('error', 'Erro ao converter data: ' . $e->getMessage());
+                $this->attributes['due_date'] = null;
+            }
+        } else if ($date instanceof \DateTime) {
             $this->attributes['due_date'] = $date;
+            // Log para depuração
+            log_message('debug', 'setDueDate de DateTime: ' . print_r($this->attributes['due_date'], true));
+        } else {
+            // Já é um objeto DateTime ou Time ou outro tipo
+            $this->attributes['due_date'] = $date;
+            // Log para depuração
+            log_message('debug', 'setDueDate de outro tipo: ' . gettype($date) . ' para ' . print_r($this->attributes['due_date'], true));
         }
         return $this;
     }
 
     public function dueDate(): string 
     {
-       return $this->attributes['due_date'] instanceof \DateTime ? $this->attributes['due_date']->format('d/m/Y') : '';
+        if (empty($this->attributes['due_date'])) {
+            return '';
+        }
+        
+        if ($this->attributes['due_date'] instanceof \DateTime) {
+            return $this->attributes['due_date']->format('d/m/Y');
+        }
+        
+        if (is_string($this->attributes['due_date'])) {
+            try {
+                $date = new \DateTime($this->attributes['due_date']);
+                return $date->format('d/m/Y');
+            } catch (\Exception $e) {
+                log_message('error', 'Erro ao formatar data: ' . $e->getMessage());
+                return $this->attributes['due_date'];
+            }
+        }
+        
+        // Para outros casos, tenta converter para string
+        return (string) $this->attributes['due_date'];
     }
 
 
