@@ -3,6 +3,7 @@
 use App\Controllers\HomeController;
 use CodeIgniter\Router\RouteCollection;
 use App\Controllers\AreasController;
+use App\Controllers\NotificationsController;
 use App\Controllers\ResidentsController; // Adicionando a importação do controlador
 use App\Controllers\ResidentUserController;
 use App\Controllers\ReservationsController;
@@ -34,6 +35,8 @@ $routes->group('residents', ['filter' => 'group:superadmin'], static function ($
     });
 });
 
+
+
 $routes->group('areas', ['filter' => 'group:superadmin'], static function ($routes) {
     $routes->get('/', [AreasController::class, 'index'], ['as' => 'areas']);
     $routes->get('new', [AreasController::class, 'new'], ['as' => 'areas.new']);
@@ -44,8 +47,6 @@ $routes->group('areas', ['filter' => 'group:superadmin'], static function ($rout
     $routes->delete('destroy/(:segment)', [AreasController::class, 'destroy/$1'], ['as' => 'areas.destroy']);
   
 });
-
-
 //! Sem filtro global
 $routes->group('reservations', static function ($routes) {
     $routes->get('/', [ReservationsController::class, 'index'], ['as' => 'reservations']);
@@ -60,6 +61,14 @@ $routes->group('reservations', static function ($routes) {
         $routes->get('(:segment)', [ReservationsBillsController::class, 'index/$1'], ['as' => 'reservations.bills']);        
         $routes->post('create/(:segment)', [ReservationsBillsController::class, 'create/$1'], ['as' => 'reservations.bills.create']);           
         $routes->put('update/(:segment)', [ReservationsBillsController::class, 'update/$1'], ['as' => 'reservations.bills.update']);
+    });
+
+    $routes->group('notifications', static function ($routes) {
+        $routes->get('/', [NotificationsController::class, 'index'], ['as' => 'notifications']);
+        $routes->get('new', [NotificationsController::class, 'new'], ['as' => 'notifications.new', 'filter' => 'group:superadmin']);
+        $routes->post('create', [NotificationsController::class, 'create'], ['as' => 'notifications.create']);        
+        $routes->delete('destroy/(:segment)', [NotificationsController::class, 'destroy/$1'], ['as' => 'notifications.destroy']);
+      
     });
   
 });
