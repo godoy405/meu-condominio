@@ -51,6 +51,7 @@ class NotificationsController extends BaseController
         }
 
         $notification = new Notification($this->validator->getValidated());
+        $notification->created_at = date('Y-m-d H:i:s');
         $this->model->insert($notification);     
 
         return redirect()->route('notifications')->with('success', 'Sucesso!');
