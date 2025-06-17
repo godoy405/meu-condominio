@@ -8,6 +8,7 @@ use App\Controllers\ResidentsController; // Adicionando a importação do contro
 use App\Controllers\ResidentUserController;
 use App\Controllers\ReservationsController;
 use App\Controllers\ReservationsBillsController;
+use App\Controllers\AnnouncementsController; // Adicionando a importação do controlador de anúncios
 
 /**
  * @var RouteCollection $routes
@@ -71,6 +72,15 @@ $routes->group('reservations', static function ($routes) {
       
     });
   
+});
+
+// Adicionando rotas para anúncios
+$routes->group('announcements', static function ($routes) {
+    $routes->get('/', [AnnouncementsController::class, 'index'], ['as' => 'announcements']);
+    $routes->get('new', [AnnouncementsController::class, 'new'], ['as' => 'announcements.new']);
+    $routes->post('create', [AnnouncementsController::class, 'create'], ['as' => 'announcements.create']);
+    $routes->get('show/(:segment)', [AnnouncementsController::class, 'show/$1'], ['as' => 'announcements.show']);
+    $routes->delete('destroy/(:segment)', [AnnouncementsController::class, 'destroy/$1'], ['as' => 'announcements.destroy']);
 });
 
 
