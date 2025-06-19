@@ -50,7 +50,8 @@ class AnnouncementsController extends BaseController
 
     public function create(): RedirectResponse 
     {
-        $rules = (new AnnouncementModel())->getRules();
+        $rules = (new AnnouncementValidation())->getRules();
+        unset($rules['resident_id']);
 
         if (!$this->validate($rules)) {
             return redirect()->back()

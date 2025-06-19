@@ -66,7 +66,7 @@ $routes->group('reservations', static function ($routes) {
 
     $routes->group('notifications', static function ($routes) {
         $routes->get('/', [NotificationsController::class, 'index'], ['as' => 'notifications']);
-        $routes->get('new', [NotificationsController::class, 'new'], ['as' => 'notifications.new', 'filter' => 'group:superadmin']);
+        $routes->get('new', [NotificationsController::class, 'new'], ['as' => 'notifications.new', 'filter' => 'group:user']);
         $routes->post('create', [NotificationsController::class, 'create'], ['as' => 'notifications.create']);        
         $routes->delete('destroy/(:segment)', [NotificationsController::class, 'destroy/$1'], ['as' => 'notifications.destroy']);
       
@@ -78,8 +78,8 @@ $routes->group('reservations', static function ($routes) {
 $routes->group('announcements', static function ($routes) {
     $routes->get('/', [AnnouncementsController::class, 'index'], ['as' => 'announcements']);
     $routes->get('new', [AnnouncementsController::class, 'new'], ['as' => 'announcements.new']);
-    $routes->post('create', [AnnouncementsController::class, 'create'], ['as' => 'announcements.create']);
     $routes->get('show/(:segment)', [AnnouncementsController::class, 'show/$1'], ['as' => 'announcements.show']);
+    $routes->post('create', [AnnouncementsController::class, 'create'], ['as' => 'announcements.create']);    
     $routes->delete('destroy/(:segment)', [AnnouncementsController::class, 'destroy/$1'], ['as' => 'announcements.destroy']);
 });
 

@@ -40,11 +40,11 @@ class AnnouncementModel extends AppModel
                 'announcement_comments.*',
                 'residents.name AS author',
             ]);
-            $builder->join('announcement_comments', 'announcement_comments.resident_id = residents.id');
+            $builder->join('residents', 'announcement_comments.resident_id = residents.id');
             $builder->where('announcement_comments.announcement_id', $announcement->id);
             $builder->orderBy('announcement_comments.created_at', 'DESC');
 
-            $announcement->comments =$builder->get()->getResult();
+            $announcement->comments = $builder->get()->getResult();
          }
     }
 }
