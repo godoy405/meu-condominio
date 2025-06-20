@@ -73,7 +73,7 @@ class AnnouncementsController extends BaseController
 
     public function show(string $code): string
     {
-        $announcement = $this->model->getByCode(code: $code, contains: ['comments']);
+        $announcement = $this->model->getByCode(code: $code, contains: ['comments', 'resident']);
 
         $data = [
             'title'        => 'Detalhes do anúncio',

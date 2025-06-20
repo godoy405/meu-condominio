@@ -13,9 +13,11 @@
         <div class="card mb-4">
             <div class="card-header pb-0">
                 <h6><?php echo $title; ?></h6>
+                <?php if(auth()->user()?->inGroup('user')) : ?>
                 <a href="<?php echo route_to('announcements.new'); ?>" class="btn btn-success float-end">
                     <i class="fas fa-plus"></i>&nbsp;Novo anúncio
                 </a>
+                <?php endif;?>
             </div>
             <div class="card-body">
                 <?php if(empty($announcements)):?>

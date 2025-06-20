@@ -3,9 +3,12 @@
 namespace App\Entities;
 
 use CodeIgniter\Entity\Entity;
+use App\Traits\Entities\ResidentFilterTrait;
 
 class Announcement extends Entity
 {
+    use ResidentFilterTrait;
+    
     protected $dates   = ['created_at', 'updated_at'];
     protected $casts   = [
         'id' => '?integer',
@@ -15,6 +18,6 @@ class Announcement extends Entity
     ];
 
     public function author(): string {
-        return $this->is_public ? $this?->resident?->name : 'Anônimo';
+        return $this->is_public ? $this?->resident?->name ?? '' : 'Anônimo';
     }
 }
