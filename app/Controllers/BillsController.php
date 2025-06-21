@@ -76,14 +76,15 @@ class BillsController extends BaseController
     {
         try {
             $bill = $this->model->getByCode(code: $code);
-
+    
             $data = [
-                'title'    => 'Editar cobrança',
-                'bill'     => $bill, 
-                'route'    => route_to('bills.update', $bill->code), 
-                'hidden'   => ['_method' => 'PUT']          
+                'title'     => 'Editar cobrança',
+                'bill'      => $bill, 
+                'residents' => model(ResidentModel::class)->orderBy('name', 'ASC')->findAll(),
+                'route'     => route_to('bills.update', $bill->code), 
+                'hidden'    => ['_method' => 'PUT']          
             ];
-
+    
             return view('Bills/form', $data);
         } catch (\RuntimeException $e) {
             return redirect()->route('bills')

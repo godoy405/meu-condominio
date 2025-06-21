@@ -41,7 +41,7 @@
                     <option value="">---Escolha um residente---</option>
                     <?php foreach($residents as $resident): ?>
                         <option value="<?php echo $resident->id ?>" <?php echo old('resident_id', $bill->resident_id) == $resident->id ? 'selected' : '' ?>>
-                            <?php echo $resident->name ?>
+                            <?php echo $resident->name ?> - Apt: <?php echo $resident->apartment ?>
                         </option>
                     <?php endforeach; ?>
                 </select>
