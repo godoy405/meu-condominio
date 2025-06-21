@@ -11,6 +11,7 @@ use App\Validation\AnnouncementValidation;
 use CodeIgniter\HTTP\RedirectResponse;
 
 
+
 class AnnouncementsController extends BaseController
 {
 
@@ -71,10 +72,17 @@ class AnnouncementsController extends BaseController
     }
 
 
-    public function show(string $code): string
+    public function show(string $code): string|RedirectResponse
     {
         $announcement = $this->model->getByCode(code: $code, contains: ['comments', 'resident']);
-
+        
+        // Verificar se o anúncio foi encontrado
+        if ($announcement === null) {
+            // Redirecionar para a página de anúncios com mensagem de erro
+            return redirect()->route('announcements')
+                             ->with('error', 'Anúncio não encontrado');
+        }
+    
         $data = [
             'title'        => 'Detalhes do anúncio',
             'announcement' => $announcement,            
@@ -88,7 +96,7 @@ class AnnouncementsController extends BaseController
         $announcement = $this->model->getByCode(code: $code);
 
         if ($this->model->delete($announcement->id)) {
-            return redirect()->route('announcements.index')
+            return redirect()->route('announcements')
                             ->with('success', 'Anúncio excluído com sucesso!');
         }
 

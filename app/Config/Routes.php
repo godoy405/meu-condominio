@@ -9,6 +9,8 @@ use App\Controllers\ResidentUserController;
 use App\Controllers\ReservationsController;
 use App\Controllers\ReservationsBillsController;
 use App\Controllers\AnnouncementsController; // Adicionando a importação do controlador de anúncios
+use App\Controllers\AnnouncementCommentsController; // Adicionando a importação do controlador de comentários
+use App\Entities\Announcement;
 
 /**
  * @var RouteCollection $routes
@@ -30,9 +32,9 @@ $routes->group('residents', ['filter' => 'group:superadmin'], static function ($
 
     $routes->group('user', static function ($routes) {
         $routes->get('(:segment)', [ResidentUserController::class, 'index'], ['as' => 'areas.user']);       
-        $routes->post('create/(:segment)', [ResidentUserController::class, 'create/$1'], ['as' => 'areas.user.create']);       
-        $routes->put('update/(:segment)', [ResidentUserController::class, 'update/$1'], ['as' => 'areas.user.update']);   
-        $routes->put('action/(:segment)', [ResidentUserController::class, 'action/$1'], ['as' => 'areas.user.action']);     
+        $routes->post('create/(:segment)', [ResidentUserController::class, 'create'], ['as' => 'areas.user.create']);       
+        $routes->put('update/(:segment)', [ResidentUserController::class, 'update'], ['as' => 'areas.user.update']);   
+        $routes->put('action/(:segment)', [ResidentUserController::class, 'action'], ['as' => 'areas.user.action']);     
     });
 });
 
@@ -42,10 +44,10 @@ $routes->group('areas', ['filter' => 'group:superadmin'], static function ($rout
     $routes->get('/', [AreasController::class, 'index'], ['as' => 'areas']);
     $routes->get('new', [AreasController::class, 'new'], ['as' => 'areas.new']);
     $routes->post('create', [AreasController::class, 'create'], ['as' => 'areas.create']);
-    $routes->get('show/(:segment)', [AreasController::class, 'show/$1'], ['as' => 'areas.show']);
-    $routes->get('edit/(:segment)', [AreasController::class, 'edit/$1'], ['as' => 'areas.edit']);
-    $routes->put('update/(:segment)', [AreasController::class, 'update/$1'], ['as' => 'areas.update']);
-    $routes->delete('destroy/(:segment)', [AreasController::class, 'destroy/$1'], ['as' => 'areas.destroy']);
+    $routes->get('show/(:segment)', [AreasController::class, 'show'], ['as' => 'areas.show']);
+    $routes->get('edit/(:segment)', [AreasController::class, 'edit'], ['as' => 'areas.edit']);
+    $routes->put('update/(:segment)', [AreasController::class, 'update'], ['as' => 'areas.update']);
+    $routes->delete('destroy/(:segment)', [AreasController::class, 'destroy'], ['as' => 'areas.destroy']);
   
 });
 //! Sem filtro global
@@ -53,35 +55,38 @@ $routes->group('reservations', static function ($routes) {
     $routes->get('/', [ReservationsController::class, 'index'], ['as' => 'reservations']);
     $routes->get('new', [ReservationsController::class, 'new'], ['as' => 'reservations.new', 'filter' => 'group:user']);
     $routes->post('create', [ReservationsController::class, 'create'], ['as' => 'reservations.create']);
-    $routes->get('show/(:segment)', [ReservationsController::class, 'show/$1'], ['as' => 'reservations.show']);    
-    $routes->put('cancel/(:segment)', [ReservationsController::class, 'cancel/$1'], ['as' => 'reservations.cancel', 'filter' => 'group:user']);
+    $routes->get('show/(:segment)', [ReservationsController::class, 'show'], ['as' => 'reservations.show']);    
+    $routes->put('cancel/(:segment)', [ReservationsController::class, 'cancel'], ['as' => 'reservations.cancel', 'filter' => 'group:user']);
 
     
     // rotas das cobranças das reservas
     $routes->group('bills', ['filter' => 'group:superadmin'], static function ($routes) { // Adicionado grupo admin
-        $routes->get('(:segment)', [ReservationsBillsController::class, 'index/$1'], ['as' => 'reservations.bills']);        
-        $routes->post('create/(:segment)', [ReservationsBillsController::class, 'create/$1'], ['as' => 'reservations.bills.create']);           
-        $routes->put('update/(:segment)', [ReservationsBillsController::class, 'update/$1'], ['as' => 'reservations.bills.update']);
+        $routes->get('(:segment)', [ReservationsBillsController::class, 'index'], ['as' => 'reservations.bills']);        
+        $routes->post('create/(:segment)', [ReservationsBillsController::class, 'create'], ['as' => 'reservations.bills.create']);           
+        $routes->put('update/(:segment)', [ReservationsBillsController::class, 'update'], ['as' => 'reservations.bills.update']);
     });
-
-    $routes->group('notifications', static function ($routes) {
-        $routes->get('/', [NotificationsController::class, 'index'], ['as' => 'notifications']);
-        $routes->get('new', [NotificationsController::class, 'new'], ['as' => 'notifications.new', 'filter' => 'group:user']);
-        $routes->post('create', [NotificationsController::class, 'create'], ['as' => 'notifications.create']);        
-        $routes->delete('destroy/(:segment)', [NotificationsController::class, 'destroy/$1'], ['as' => 'notifications.destroy']);
-      
-    });
-  
 });
 
-// Adicionando rotas para anúncios
+$routes->group('notifications', static function ($routes) {
+    $routes->get('/', [NotificationsController::class, 'index'], ['as' => 'notifications']);
+    $routes->get('new', [NotificationsController::class, 'new'], ['as' => 'notifications.new', 'filter' => 'group:user']);
+    $routes->get('show/(:segment)', [NotificationsController::class,'show'], ['as' => 'notifications.show']);
+    $routes->post('create', [NotificationsController::class, 'create'], ['as' => 'notifications.create']);        
+    $routes->delete('destroy/(:segment)', [NotificationsController::class, 'destroy'], ['as' => 'notifications.destroy']);
+});
+
 $routes->group('announcements', static function ($routes) {
     $routes->get('/', [AnnouncementsController::class, 'index'], ['as' => 'announcements']);
     $routes->get('new', [AnnouncementsController::class, 'new'], ['as' => 'announcements.new']);
-    $routes->get('show/(:segment)', [AnnouncementsController::class, 'show/$1'], ['as' => 'announcements.show']);
+    $routes->get('show/(:segment)', [AnnouncementsController::class, 'show'], ['as' => 'announcements.show']);
     $routes->post('create', [AnnouncementsController::class, 'create'], ['as' => 'announcements.create']);    
-    $routes->delete('destroy/(:segment)', [AnnouncementsController::class, 'destroy/$1'], ['as' => 'announcements.destroy']);
+    $routes->delete('destroy/(:segment)', [AnnouncementsController::class, 'destroy'], ['as' => 'announcements.destroy']);
+
+    $routes->group('comments', static function ($routes) {     
+        $routes->post('create/(:segment)', [AnnouncementCommentsController::class, 'create'], ['as' => 'announcements.comments.create']);      
+    });
 });
+
 
 
 
