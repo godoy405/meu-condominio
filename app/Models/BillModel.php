@@ -33,7 +33,7 @@ class BillModel extends AppModel
 
         $this->whereResident();
 
-        return $this->orderBy('create_at', 'DES')->findAll();
+        return $this->orderBy('created_at', 'DESC')->findAll();
     }
 
     public function getByCode(string $code, array $contains = []): object
