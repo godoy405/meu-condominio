@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Controllers\BaseController;
 use App\Entities\Occurrence;
+use App\Enum\Occurrence\Status;
 use App\Models\OccurrenceModel;
 use App\Validation\OccurrenceValidation;
 use CodeIgniter\HTTP\RedirectResponse;
@@ -49,7 +50,8 @@ class OccurrencesController extends BaseController
         }
 
         $occurrence = new Occurrence($this->validator->getValidated());  
-        $occurrence->resident_id = auth()->user()->id;   
+        $occurrence->resident_id = auth()->user()->id; 
+        $occurrence->status = Status::Open->value;  
         $id = $this->model->insert($occurrence);
         $occurrence = $this->model->find($id);
 

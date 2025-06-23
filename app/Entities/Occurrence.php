@@ -16,11 +16,11 @@ class Occurrence extends Entity
 
     public function permitAction():bool
     {
-        return auth()->user()->inGroup('superadmin') && $this->status === Status::Open->value;
+        return auth()->user()->inGroup('superadmin') && $this->status !== Status::Closed->value;
     }
 
     public function status(): string
     {
-        return Status::tryFrom($this->attributes['status'])->label();
+        return empty($this->status) ? 'Desconhecido' : Status::tryFrom($this->attributes['status'])->label();
     }
 }

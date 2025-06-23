@@ -14,7 +14,7 @@ enum Status: string
         return match ($this) {
             self::Open     => 'Em aberto',
             self::Progress => 'Em andamento',
-            self::Closed   => 'Resolvida',            
+            self::Closed   => 'Resolvida',                   
         };
     }
 

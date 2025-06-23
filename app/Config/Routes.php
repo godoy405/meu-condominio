@@ -14,6 +14,7 @@ use App\Controllers\BillsController;
 use App\Controllers\OccurrencesController;
 use App\Entities\Announcement;
 use App\Entities\Occurrence;
+use App\Controllers\OccurrenceUpdatesController;
 
 /**
  * @var RouteCollection $routes
@@ -104,7 +105,11 @@ $routes->group('occurrences', static function ($routes) {
     $routes->get('/', [OccurrencesController::class, 'index'], ['as' => 'occurrences']);
     $routes->get('new', [OccurrencesController::class, 'new'], ['as' => 'occurrences.new', 'filter' => 'group:user']);
     $routes->post('create', [OccurrencesController::class, 'create'], ['as' => 'occurrences.create']);
-    $routes->get('show/(:segment)', [OccurrencesController::class, 'show'], ['as' => 'occurrences.show']);    
+    $routes->get('show/(:segment)', [OccurrencesController::class, 'show'], ['as' => 'occurrences.show']);  
+    
+    $routes->group('updates', static function ($routes) {     
+        $routes->post('create/(:segment)', [OccurrenceUpdatesController::class, 'create'], ['as' => 'occurrences.updates.create']);      
+    });
   
 });
 
