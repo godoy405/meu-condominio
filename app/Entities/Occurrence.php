@@ -23,4 +23,9 @@ class Occurrence extends Entity
     {
         return empty($this->status) ? 'Desconhecido' : Status::tryFrom($this->attributes['status'])->label();
     }
+
+    public function isClosed():bool
+    {
+        return $this->status === Status::Closed->value;
+    }
 }

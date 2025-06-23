@@ -11,6 +11,7 @@ use App\Controllers\ReservationsBillsController;
 use App\Controllers\AnnouncementsController; // Adicionando a importação do controlador de anúncios
 use App\Controllers\AnnouncementCommentsController; // Adicionando a importação do controlador de comentários
 use App\Controllers\BillsController;
+use App\Controllers\OccurrenceResolveController;
 use App\Controllers\OccurrencesController;
 use App\Entities\Announcement;
 use App\Entities\Occurrence;
@@ -109,6 +110,11 @@ $routes->group('occurrences', static function ($routes) {
     
     $routes->group('updates', static function ($routes) {     
         $routes->post('create/(:segment)', [OccurrenceUpdatesController::class, 'create'], ['as' => 'occurrences.updates.create']);      
+    });
+
+    $routes->group('resolve', ['filter' => 'group:superadmin'],static function ($routes) {   
+        $routes->get('(:segment)', [OccurrenceResolveController::class, 'index'], ['as' => 'occurrences.resolve']);  
+        $routes->post('process/(:segment)', [OccurrenceResolveController::class, 'process'], ['as' => 'occurrences.resolve.process']);             
     });
   
 });

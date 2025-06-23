@@ -49,6 +49,12 @@
                             <?php echo $occurrence->description; ?>
                         </p>
 
+                        <?php if($occurrence->isClosed()): ?>
+                            <p>
+                                <strong>Solução aplicada:  </strong><?php echo $occurrence->solution; ?>
+                            </p>
+                        <?php endif; ?>                        
+
                         <?php if ($occurrence->permitAction()): ?>
                             <a href="<?php echo route_to('occurrences.resolve', $occurrence->code); ?>" class="btn btn-dark"><i class="fas fa-check"></i> Resolver</a>
                         <?php endif; ?>

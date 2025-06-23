@@ -19,7 +19,8 @@ class OccurrenceModel extends AppModel
         'resident_id',
         'title',    
         'status',
-        'description',          
+        'description',   
+        'solution',       
     ];     
 
     protected function relateData(object &$occurrence, array $contains = []): void
