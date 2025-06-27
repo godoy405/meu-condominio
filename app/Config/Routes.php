@@ -16,6 +16,7 @@ use App\Controllers\OccurrencesController;
 use App\Entities\Announcement;
 use App\Entities\Occurrence;
 use App\Controllers\OccurrenceUpdatesController;
+use App\Controllers\VisitsController;
 
 /**
  * @var RouteCollection $routes
@@ -116,6 +117,14 @@ $routes->group('occurrences', static function ($routes) {
         $routes->get('(:segment)', [OccurrenceResolveController::class, 'index'], ['as' => 'occurrences.resolve']);  
         $routes->post('process/(:segment)', [OccurrenceResolveController::class, 'process'], ['as' => 'occurrences.resolve.process']);             
     });
+  
+});
+
+$routes->group('visits', static function ($routes) {
+    $routes->get('/', [VisitsController::class, 'index'], ['as' => 'visits']);
+    $routes->get('new', [VisitsController::class, 'new'], ['as' => 'visits.new', 'filter' => 'group:user']);
+    $routes->post('create', [VisitsController::class, 'create'], ['as' => 'visits.create']);    
+    $routes->delete('destroy/(:segment)', [VisitsController::class, 'destroy'], ['as' => 'visits.destroy']);
   
 });
 

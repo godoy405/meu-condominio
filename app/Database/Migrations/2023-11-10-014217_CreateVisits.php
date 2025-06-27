@@ -58,8 +58,7 @@ class CreateVisits extends Migration
             ]
         );
 
-        $this->forge->addKey('id', true);
-      
+        $this->forge->addKey('id', true);      
         $this->forge->addKey('resident_id');
         $this->forge->addKey('code');
         $this->forge->addKey('name');

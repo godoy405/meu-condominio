@@ -26,15 +26,15 @@ class VisitModel extends AppModel
         'name',
         'is_used',    
         'valid_until',
-        'used_in',          
+        'used_in',        
     ];  
 
     public function setInitialData(array $data): array
     {
         $data['data']['valid_until'] = Time::now()->addHours(24)->format('Y-m-d H:i:s');
         $data['data']['is_used'] = false;
-        $data['data']['resident_id'] = auth()->user()->resident_id ?? null;
-
+        $data['data']['resident_id'] = auth()->user()->resident_id;               
+        
         return $data;
     }
 
@@ -60,11 +60,7 @@ class VisitModel extends AppModel
         $this->whereResident();
 
         // Recupera a reserva pelo código
-        $visit = parent::getByCode(code: $code);
-
-        if ($visit === null) {
-            throw new \RuntimeException("Reserva com código {$code} não encontrada");
-        }
+        $visit = parent::getByCode(code: $code);        
 
         // Relaciona dados adicionais, se necessário
         $this->relateData($visit, $contains);

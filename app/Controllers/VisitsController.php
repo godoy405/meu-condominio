@@ -54,8 +54,8 @@ class VisitsController extends BaseController
                              ->with('errors', $this->validator->getErrors());
         }
 
-        $visit = new Visit($this->validator->getValidated());
-        $this->model->insert($visit);
+        $visit = new Visit($this->validator->getValidated());       
+        $this->model->insert($visit);        
           
         return redirect()->route('visits')->with('success', 'Sucesso !');
                              

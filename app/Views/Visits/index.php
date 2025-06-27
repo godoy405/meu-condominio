@@ -32,9 +32,9 @@
                     <tr>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Código</th>
                       <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Residente</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foi usada</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Válida até</th>
-                      <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Criada</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Foi usada</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Válida até</th>
+                      <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Criada</th>
                       <th class="text-secondary opacity-7"></th>
                     </tr>
                   </thead>
@@ -69,8 +69,7 @@
                         </div>
                       </td>
                       <td class="align-middle">
-                        <span class="text-secondary"><?php echo $visit->created_at->humanize(); ?></span>
-                          <?php echo $visit->created_at;?>
+                        <span class="text-secondary"><?php echo $visit->created_at->humanize(); ?></span>                          
                       </td>
                       <td class="align-middle text-center">
                         <?php if($visit->canBeDeleted()): ?>
