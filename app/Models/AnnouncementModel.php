@@ -4,9 +4,12 @@ namespace App\Models;
 
 use App\Models\Basic\AppModel;
 use App\Entities\Announcement;
+use App\Traits\Models\ResidentFilterTrait;
 
 class AnnouncementModel extends AppModel
 {
+    use ResidentFilterTrait;
+    
     protected $table            = 'announcements';        
     protected $returnType       = Announcement::class;    
     protected $allowedFields    = [        

@@ -25,7 +25,13 @@ class BillModel extends AppModel
     
     public function sumBillsStatus(string $status): float|int
     {
-        return $this->selectSum('amount')->where('status', $status)->first() ?? 0;
+        return $this->selectSum('amount')->where('status', $status)->first()->amount ?? 0;
+    }
+    
+    // Método adicional para resolver o problema de nome
+    public function sumBillsByStatus(string $status): float|int
+    {
+        return $this->sumBillsStatus($status);
     }
 
     public function all(): array 

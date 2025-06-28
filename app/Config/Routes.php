@@ -10,6 +10,7 @@ use App\Controllers\ReservationsController;
 use App\Controllers\ReservationsBillsController;
 use App\Controllers\AnnouncementsController; // Adicionando a importação do controlador de anúncios
 use App\Controllers\AnnouncementCommentsController; // Adicionando a importação do controlador de comentários
+use App\Controllers\Api\ApiVisitsController;
 use App\Controllers\BillsController;
 use App\Controllers\OccurrenceResolveController;
 use App\Controllers\OccurrencesController;
@@ -125,6 +126,14 @@ $routes->group('visits', static function ($routes) {
     $routes->get('new', [VisitsController::class, 'new'], ['as' => 'visits.new', 'filter' => 'group:user']);
     $routes->post('create', [VisitsController::class, 'create'], ['as' => 'visits.create']);    
     $routes->delete('destroy/(:segment)', [VisitsController::class, 'destroy'], ['as' => 'visits.destroy']);
+  
+});
+
+$routes->group('api', ['filter' => 'api_client_request'], static function ($routes) {
+    $routes->group('visits', ['filter' => 'api_client_request'], static function ($routes) {        
+        $routes->post('checkin', [ApiVisitsController::class, 'checkin'], ['as' => 'api.visits.checkin']);            
+        $routes->options('visits', static function () {} ); 
+    });
   
 });
 
